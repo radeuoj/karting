@@ -16,17 +16,21 @@ class_name Kart
 
 @export_group("")
 @export var drag_coef := 0.5
-@export var traction_coef := 100.0
+@export var traction_coef := 1.0
 
-func _physics_process(delta: float) -> void:
-	#if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-		#apply_force(Vector3.RIGHT * mass * 10)
+func _physics_process(_delta: float) -> void:
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		apply_force(global_basis.x * mass * 10)
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+		apply_force(-global_basis.x * mass * 10)
 	
 	for wheel in wheels:
+		#DebugDraw3D.draw_arrow_ray(wheel.get_wheel_pos() + global_position, wheel.global_basis.x, 1, Color.DEEP_PINK, 0.05)
+		
 		handle_suspension(wheel)
-		handle_acceleration(wheel, delta)
-		#handle_steering(wheel)
-		#handle_traction(wheel)
+		handle_acceleration(wheel)
+		handle_steering(wheel)
+		handle_traction(wheel)
 		
 	# drag
 	var drag_force := -linear_velocity.normalized() * linear_velocity.length_squared() * drag_coef
@@ -57,20 +61,18 @@ func handle_suspension(wheel: Wheel) -> void:
 	var damping_force := damping_strength * relative_vel
 	
 	var force = (suspension_force - damping_force) * up
-	var force_pos := wheel.position - up * length;
+	var force_pos := wheel.get_wheel_pos();
 	
 	apply_force(force, force_pos)
 	DebugDraw3D.draw_arrow_ray(force_pos + global_position, force / mass, 0.3, Color.BLUE, 0.05)
 	
-func handle_acceleration(wheel: Wheel, delta: float):
+func handle_acceleration(wheel: Wheel):
 	if not wheel.is_on_ground():
 		return
 		
 	var force := Vector3.ZERO
 		
 	if wheel.is_motor:
-		DebugDraw3D.draw_arrow_ray(wheel.get_wheel_pos() + global_position, Vector3.UP * 1, 1, Color.DEEP_PINK, 0.05)
-		
 		var acceleration_input := Input.get_action_strength("acceleration")
 		var gear_input := -1 if Input.is_action_pressed("reverse") else 1
 		var acceleration_force := -wheel.global_basis.z * gear_input * acceleration_strength * acceleration_input
@@ -91,9 +93,9 @@ func handle_acceleration(wheel: Wheel, delta: float):
 	DebugDraw3D.draw_arrow_ray(force_pos + global_position, force / mass, 0.3, Color.GREEN, 0.05)
 	
 	# wheel spin
-	var vel := forward.dot(linear_velocity)
+	var vel := forward.dot(get_point_velocity(wheel.get_wheel_pos() + global_position))
 	var ang_vel := -vel / wheel_radius
-	wheel.mesh.rotate_x(ang_vel * delta)
+	wheel.mesh.rotate_x(ang_vel * get_physics_process_delta_time())
 	
 func handle_steering(wheel: Wheel):
 	if not wheel.can_steer:
@@ -109,9 +111,15 @@ func handle_traction(wheel: Wheel):
 	if not wheel.is_on_ground():
 		return
 	
+	#var right := wheel.global_basis.x.rotated(wheel.global_basis.y, steering_angle) if wheel.can_steer else wheel.global_basis.x
 	var right := wheel.global_basis.x
-	var right_vel := right.dot(linear_velocity)
-	var traction_force := -right * right_vel * right_vel * traction_coef
+	var right_vel := right.dot(get_point_velocity(wheel.get_wheel_pos() + global_position))
+	#DebugDraw3D.draw_arrow_ray(wheel.get_wheel_pos() + global_position, right * right_vel, 1, Color.DEEP_PINK, 0.05)
+	
+	var desired_vel_change := -right_vel * traction_coef
+	var desired_acceleration := desired_vel_change / get_physics_process_delta_time()
+	
+	var traction_force := right * desired_acceleration * mass / 4.0
 	var force_pos := wheel.get_wheel_pos()
 	
 	apply_force(traction_force, force_pos)

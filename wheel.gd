@@ -22,4 +22,4 @@ func is_on_ground() -> bool:
 	return true
 	
 func get_wheel_pos() -> Vector3:
-	return mesh.position + position
+	return mesh.global_position - kart.global_position
