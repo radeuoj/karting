@@ -1,0 +1,80 @@
+[gd_scene load_steps=9 format=3 uid="uid://drjjbumw6rbye"]
+
+[ext_resource type="Script" uid="uid://dotmcmu2uaumf" path="res://kart.gd" id="1_fhxd7"]
+[ext_resource type="Shader" uid="uid://b3ra0qglxxygr" path="res://grid.gdshader" id="2_6vfav"]
+[ext_resource type="Script" uid="uid://bwqyct61nrs1r" path="res://wheel.gd" id="3_37pdu"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1bvp3"]
+size = Vector3(1, 0.4, 1.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_lquwl"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7mycd"]
+render_priority = 0
+shader = ExtResource("2_6vfav")
+shader_parameter/line_color = Color(0.9974088, 0.52472305, 0.7223495, 1)
+shader_parameter/zoom = 8.10000010579852
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_lquwl"]
+top_radius = 0.2
+bottom_radius = 0.2
+height = 0.2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_272bh"]
+render_priority = 0
+shader = ExtResource("2_6vfav")
+shader_parameter/line_color = Color(0.27752772, 0.27752772, 0.27752772, 1)
+shader_parameter/zoom = 8.0000001043084
+
+[node name="Kart" type="RigidBody3D" node_paths=PackedStringArray("wheels")]
+mass = 80.0
+script = ExtResource("1_fhxd7")
+wheels = [NodePath("WheelRL"), NodePath("WheelFL"), NodePath("WheelRR"), NodePath("WheelFR")]
+acceleration_strength = 600.0
+drag_coef = 0.5
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_1bvp3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.4, 0, 0, 0, 1.8, 0, 0, 0)
+mesh = SubResource("BoxMesh_lquwl")
+surface_material_override/0 = SubResource("ShaderMaterial_7mycd")
+
+[node name="WheelFL" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 0, -0.5)
+script = ExtResource("3_37pdu")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WheelFL"]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("CylinderMesh_lquwl")
+surface_material_override/0 = SubResource("ShaderMaterial_272bh")
+
+[node name="WheelFR" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0, -0.5)
+script = ExtResource("3_37pdu")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WheelFR"]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("CylinderMesh_lquwl")
+surface_material_override/0 = SubResource("ShaderMaterial_272bh")
+
+[node name="WheelRL" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 0, 0.5)
+script = ExtResource("3_37pdu")
+is_motor = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WheelRL"]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("CylinderMesh_lquwl")
+surface_material_override/0 = SubResource("ShaderMaterial_272bh")
+
+[node name="WheelRR" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0, 0.5)
+script = ExtResource("3_37pdu")
+is_motor = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WheelRR"]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("CylinderMesh_lquwl")
+surface_material_override/0 = SubResource("ShaderMaterial_272bh")
