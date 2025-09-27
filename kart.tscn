@@ -31,7 +31,6 @@ mass = 80.0
 script = ExtResource("1_fhxd7")
 wheels = [NodePath("WheelRL"), NodePath("WheelFL"), NodePath("WheelRR"), NodePath("WheelFR")]
 acceleration_strength = 600.0
-drag_coef = 0.5
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("BoxShape3D_1bvp3")
@@ -44,6 +43,7 @@ surface_material_override/0 = SubResource("ShaderMaterial_7mycd")
 [node name="WheelFL" type="RayCast3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 0, -0.5)
 script = ExtResource("3_37pdu")
+can_steer = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WheelFL"]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, -0.5, 0)
@@ -53,6 +53,7 @@ surface_material_override/0 = SubResource("ShaderMaterial_272bh")
 [node name="WheelFR" type="RayCast3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0, -0.5)
 script = ExtResource("3_37pdu")
+can_steer = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="WheelFR"]
 transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, -0.5, 0)

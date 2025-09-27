@@ -1,7 +1,9 @@
 extends RigidBody3D
+class_name Kart
 
 @export_group("Wheels")
 @export var wheels: Array[Wheel]
+@export var wheel_radius := 0.2
 
 @export_group("Suspension")
 @export var suspension_strength := 10000.0
@@ -11,17 +13,20 @@ extends RigidBody3D
 @export_group("Acceleration")
 @export var acceleration_strength := 1000.0
 @export var brake_strength := 1000.0
-@export var drag_coef := 100.0
+
+@export_group("")
+@export var drag_coef := 0.5
+@export var traction_coef := 100.0
 
 func _physics_process(delta: float) -> void:
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-		apply_force(Vector3.UP * mass * 20)
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-		apply_torque_impulse(Vector3.FORWARD * mass)
+	#if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		#apply_force(Vector3.RIGHT * mass * 10)
 	
 	for wheel in wheels:
 		handle_suspension(wheel)
 		handle_acceleration(wheel, delta)
+		#handle_steering(wheel)
+		#handle_traction(wheel)
 		
 	# drag
 	var drag_force := -linear_velocity.normalized() * linear_velocity.length_squared() * drag_coef
@@ -37,7 +42,7 @@ func handle_suspension(wheel: Wheel) -> void:
 	
 	var contact := wheel.get_collision_point()
 	var up := wheel.global_basis.y
-	var length := up.dot(wheel.global_position) - up.dot(contact) - wheel.wheel_radius
+	var length := up.dot(wheel.global_position) - up.dot(contact) - wheel_radius
 	var offset := rest_distance - length
 	
 	if offset <= 0:
@@ -55,23 +60,17 @@ func handle_suspension(wheel: Wheel) -> void:
 	var force_pos := wheel.position - up * length;
 	
 	apply_force(force, force_pos)
-	#DebugDraw3D.draw_arrow_ray(force_pos + global_position, force / mass, 1, Color.BLUE, 0.05)
+	DebugDraw3D.draw_arrow_ray(force_pos + global_position, force / mass, 0.3, Color.BLUE, 0.05)
 	
 func handle_acceleration(wheel: Wheel, delta: float):
-	if !wheel.is_colliding():
-		return
-		
-	var contact := wheel.get_collision_point()
-	var up := wheel.global_basis.y
-	var length := up.dot(wheel.global_position) - up.dot(contact) - wheel.wheel_radius
-	var offset := rest_distance - length
-	
-	if offset <= 0:
+	if not wheel.is_on_ground():
 		return
 		
 	var force := Vector3.ZERO
 		
 	if wheel.is_motor:
+		DebugDraw3D.draw_arrow_ray(wheel.get_wheel_pos() + global_position, Vector3.UP * 1, 1, Color.DEEP_PINK, 0.05)
+		
 		var acceleration_input := Input.get_action_strength("acceleration")
 		var gear_input := -1 if Input.is_action_pressed("reverse") else 1
 		var acceleration_force := -wheel.global_basis.z * gear_input * acceleration_strength * acceleration_input
@@ -86,14 +85,35 @@ func handle_acceleration(wheel: Wheel, delta: float):
 	elif brake_input > 0:
 		linear_velocity = Vector3.ZERO
 	
-	var force_pos := wheel.position - up * length;
+	var force_pos := wheel.get_wheel_pos()
 	
 	apply_force(force, force_pos)
-	#DebugDraw3D.draw_arrow_ray(force_pos + global_position, force / mass, 1, Color.GREEN, 0.05)
+	DebugDraw3D.draw_arrow_ray(force_pos + global_position, force / mass, 0.3, Color.GREEN, 0.05)
 	
 	# wheel spin
 	var vel := forward.dot(linear_velocity)
-	var ang_vel := -vel * 2 * PI * wheel.wheel_radius
+	var ang_vel := -vel / wheel_radius
 	wheel.mesh.rotate_x(ang_vel * delta)
 	
+func handle_steering(wheel: Wheel):
+	if not wheel.can_steer:
+		return
+	
+	var steering_axis = Input.get_axis("steer_left", "steer_right")
+	var max_steer_angle = deg_to_rad(30)
+	var angle = steering_axis * max_steer_angle
+	
+	wheel.rotation.y = -angle
+	
+func handle_traction(wheel: Wheel):
+	if not wheel.is_on_ground():
+		return
+	
+	var right := wheel.global_basis.x
+	var right_vel := right.dot(linear_velocity)
+	var traction_force := -right * right_vel * right_vel * traction_coef
+	var force_pos := wheel.get_wheel_pos()
+	
+	apply_force(traction_force, force_pos)
+	DebugDraw3D.draw_arrow_ray(force_pos + global_position, traction_force / mass, 0.3, Color.RED, 0.05)
 	

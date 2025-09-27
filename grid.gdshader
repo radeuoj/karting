@@ -1,7 +1,7 @@
 shader_type spatial;
 
 uniform vec3 line_color: source_color = vec3(0.7);
-uniform float zoom: hint_range(1.0, 1000.0, 0.1) = 100.0;
+uniform float zoom: hint_range(1.0, 10000.0, 0.1) = 100.0;
 
 float draw_grid(vec2 uv) {
 	//vec2 grid_uv = fract(uv);

@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://db3x6hhv5s5yi"]
+[gd_scene load_steps=19 format=3 uid="uid://db3x6hhv5s5yi"]
 
 [ext_resource type="Script" uid="uid://cvit2whx5akb" path="res://cube_tester.gd" id="1_0xm2m"]
 [ext_resource type="Shader" uid="uid://b3ra0qglxxygr" path="res://grid.gdshader" id="1_1bvp3"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://drjjbumw6rbye" path="res://kart.tscn" id="4_7mycd"]
 [ext_resource type="Script" uid="uid://bfa7wcghltgrj" path="res://arrow.gd" id="6_7mycd"]
 [ext_resource type="Shader" uid="uid://c8em564h0cloa" path="res://arrow.gdshader" id="6_272bh"]
+[ext_resource type="PackedScene" uid="uid://b88qg1ld128ns" path="res://camera_controller.tscn" id="7_272bh"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_7dm0k"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -29,7 +30,7 @@ size = Vector2(1, 1)
 render_priority = 0
 shader = ExtResource("1_1bvp3")
 shader_parameter/line_color = Color(0.7, 0.7, 0.7, 1)
-shader_parameter/zoom = 1000.0
+shader_parameter/zoom = 1000.0000148862988
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0xm2m"]
 
@@ -88,18 +89,19 @@ script = ExtResource("3_h2yge")
 kart = NodePath("../Kart")
 
 [node name="Kart" parent="." instance=ExtResource("4_7mycd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5163958, -8.12983)
-axis_lock_linear_x = true
-axis_lock_angular_y = true
-axis_lock_angular_z = true
-
-[node name="Camera3D" type="Camera3D" parent="Kart"]
-transform = Transform3D(8.940696e-08, 0.45243472, -0.8917976, -1.9963788e-09, 0.89179754, 0.45243472, 1, -3.867045e-08, 8.063614e-08, -3.344, 1.192, 0)
-current = true
-size = 2.942
+transform = Transform3D(0.8925858, 0, 0.45087752, 0, 1, 0, -0.45087752, 0, 0.8925858, 0, 1.5163958, -8.12983)
+rest_distance = 0.51
 
 [node name="Arrow" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5926714, 1.2442218, 0)
 mesh = SubResource("ImmediateMesh_272bh")
 script = ExtResource("6_7mycd")
 material = SubResource("ShaderMaterial_5vw27")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.9998764, -0.0063848053, 0.014371285, 0, 0.91386896, 0.40600932, -0.015725762, -0.4059591, 0.91375595, 0.05235939, 4.522753, -0.779354)
+visible = false
+current = true
+size = 2.942
+
+[node name="CameraController" parent="." instance=ExtResource("7_272bh")]
