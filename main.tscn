@@ -1,8 +1,7 @@
-[gd_scene load_steps=18 format=3 uid="uid://db3x6hhv5s5yi"]
+[gd_scene load_steps=17 format=3 uid="uid://db3x6hhv5s5yi"]
 
 [ext_resource type="Script" uid="uid://cvit2whx5akb" path="res://cube_tester.gd" id="1_0xm2m"]
 [ext_resource type="Shader" uid="uid://b3ra0qglxxygr" path="res://grid.gdshader" id="1_1bvp3"]
-[ext_resource type="Script" uid="uid://bcqbnfre171a5" path="res://fps.gd" id="3_h2yge"]
 [ext_resource type="PackedScene" uid="uid://drjjbumw6rbye" path="res://kart.tscn" id="4_7mycd"]
 [ext_resource type="Script" uid="uid://bfa7wcghltgrj" path="res://arrow.gd" id="6_7mycd"]
 [ext_resource type="Shader" uid="uid://c8em564h0cloa" path="res://arrow.gdshader" id="6_272bh"]
@@ -79,13 +78,6 @@ shape = SubResource("BoxShape3D_0xm2m")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D"]
 mesh = SubResource("BoxMesh_h2yge")
 surface_material_override/0 = SubResource("ShaderMaterial_1bvp3")
-
-[node name="FPS" type="Label" parent="." node_paths=PackedStringArray("kart")]
-offset_right = 40.0
-offset_bottom = 23.0
-text = "Salut"
-script = ExtResource("3_h2yge")
-kart = NodePath("../Kart")
 
 [node name="Kart" parent="." instance=ExtResource("4_7mycd")]
 transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 0.99999994, 0, 1.5163958, -8.12983)

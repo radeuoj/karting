@@ -19,10 +19,10 @@ class_name Kart
 @export var traction_coef := 1.0
 
 func _physics_process(_delta: float) -> void:
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-		apply_force(global_basis.x * mass * 10)
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-		apply_force(-global_basis.x * mass * 10)
+	#if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		#apply_force(global_basis.x * mass * 10)
+	#if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+		#apply_force(-global_basis.x * mass * 10)
 	
 	for wheel in wheels:
 		#DebugDraw3D.draw_arrow_ray(wheel.get_wheel_pos() + global_position, wheel.global_basis.x, 1, Color.DEEP_PINK, 0.05)
